@@ -1,0 +1,36 @@
+﻿services:
+  
+  postgres:
+    image: postgres
+    container_name: cop-samples-postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${POSTGRES_DB:-cop-sample}", "-U", "${POSTGRES_USER:-debug}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cop-sample}
+      POSTGRES_USER: ${POSTGRES_USER:-debug}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-debug}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+    ports:
+      - "5432:5432"
+  
+  localstack:
+    image: localstack/localstack:stable
+    container_name: cop-localstack
+    hostname: localstack
+    healthcheck:
+      test: awslocal kms list-keys
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: sqs,sns
+      PERSISTENCE: 1
+      HOSTNAME_EXTERNAL: localstack
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
