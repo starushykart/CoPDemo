@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/CoP.Demo.EF.props" />
-</Project>
